@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:courses/components/size_config.dart';
 import 'package:courses/constants/colors.dart';
 import 'package:courses/constants/icons.dart';
+import 'package:courses/models/category_model.dart';
+import 'package:courses/models/course_model.dart';
 import 'package:courses/screens/list/lesson_list_page.dart';
 import 'package:courses/widgets/text_widgets.dart';
 import 'package:flutter/cupertino.dart';
@@ -18,6 +21,18 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _currentCategoryIndex = 0;
+  final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
+
+  List<Course>? _courseList;
+
+  @override
+  void initState() {
+    super.initState();
+    _getCourseList().then((value) {
+      _courseList = value;
+      setState(() {});
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,63 +48,67 @@ class _HomePageState extends State<HomePage> {
           _showSearchField(),
           _showCategories(),
           _showCourseTitle(),
-          _setLessonInfoLayout(),
-          _setLessonInfoLayout(),
-          _setLessonInfoLayout(),
+          _courseList != null
+              ? SliverList(
+                  delegate: SliverChildListDelegate(
+                    List.generate(_courseList!.length, (index) => _setLessonInfoLayout(_courseList![index]))
+                  ))
+              : SliverToBoxAdapter(
+                  child: SetTextWidget("Null"),
+                ),
         ],
       );
 
-  SliverToBoxAdapter _setLessonInfoLayout() {
-    return SliverToBoxAdapter(
-      child: InkWell(
-        onTap: (){
-          Navigator.push(context, MaterialPageRoute(builder: (_)=> LessonListPage()));
-        },
-        child: Container(
-          margin: EdgeInsets.symmetric(
-              horizontal: getProportionateScreenWidth(16.0),
-              vertical: getProportionateScreenHeight(5.5)),
-          height: getProportionateScreenHeight(211.0),
-          width: MediaQuery.of(context).size.width,
-          padding: EdgeInsets.all(getProportionateScreenWidth(7.0)),
-          decoration: BoxDecoration(
-            color: ConstColors.lightGrey,
-            borderRadius: BorderRadius.circular(
-              getProportionateScreenWidth(10.0),
-            ),
+  InkWell _setLessonInfoLayout(Course course) {
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (_) => LessonListPage(course)));
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(
+            horizontal: getProportionateScreenWidth(16.0),
+            vertical: getProportionateScreenHeight(5.5)),
+        height: getProportionateScreenHeight(211.0),
+        width: MediaQuery.of(context).size.width,
+        padding: EdgeInsets.all(getProportionateScreenWidth(7.0)),
+        decoration: BoxDecoration(
+          color: ConstColors.lightGrey,
+          borderRadius: BorderRadius.circular(
+            getProportionateScreenWidth(10.0),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                height: getProportionateScreenHeight(132.0),
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10.0),
-                  image: const DecorationImage(
-                    fit: BoxFit.cover,
-                    image: NetworkImage("https://source.unsplash.com/random/475"),
-                  ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              height: getProportionateScreenHeight(132.0),
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10.0),
+                image: DecorationImage(
+                  fit: BoxFit.cover,
+                  image: NetworkImage(course.imageUrl),
                 ),
               ),
-              SizedBox(height: getProportionateScreenHeight(8.0)),
-              SetTextWidget(
-                "UX/UI dizayn",
-                weight: FontWeight.w700,
-              ),
-              SetTextWidget(
-                "Boshlang`ich darajadagilar uchun",
-                weight: FontWeight.w400,
-                size: getProportionateScreenWidth(12.0),
-              ),
-              SetTextWidget(
-                ":) 97%",
-                size: getProportionateScreenWidth(12.0),
-                textColor: ConstColors.tealBlue,
-                weight: FontWeight.w700,
-              ),
-            ],
-          ),
+            ),
+            SizedBox(height: getProportionateScreenHeight(8.0)),
+            SetTextWidget(
+              course.name,
+              weight: FontWeight.w700,
+            ),
+            SetTextWidget(
+              course.description,
+              weight: FontWeight.w400,
+              size: getProportionateScreenWidth(12.0),
+            ),
+            SetTextWidget(
+              ":) 97%",
+              size: getProportionateScreenWidth(12.0),
+              textColor: ConstColors.tealBlue,
+              weight: FontWeight.w700,
+            ),
+          ],
         ),
       ),
     );
@@ -152,16 +171,27 @@ class _HomePageState extends State<HomePage> {
   SliverToBoxAdapter _showCategories() => SliverToBoxAdapter(
         child: SizedBox(
           height: getProportionateScreenHeight(149.0),
-          child: ListView(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 3.0, vertical: 24.0),
-            scrollDirection: Axis.horizontal,
-            children: [
-              _setCategoryLayout(_courseTitles[0], IconName.programming, 0),
-              _setCategoryLayout(_courseTitles[1], IconName.design, 1),
-              _setCategoryLayout(_courseTitles[2], IconName.smm, 2),
-              _setCategoryLayout(_courseTitles[3], IconName.languages, 3),
-            ],
+          child: FutureBuilder(
+            future: _getCategories(),
+            builder: (context, AsyncSnapshot<List<Category>> snap) {
+              if (snap.hasData) {
+                return ListView(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 3.0, vertical: 24.0),
+                  scrollDirection: Axis.horizontal,
+                  children: List.generate(snap.data!.length, (index) {
+                    Category category = snap.data![index];
+                    return _setCategoryLayout(
+                        category.name, category.imageUrl, index);
+                  }),
+                );
+              } else if (snap.hasError) {
+                SetTextWidget("ERROR");
+              }
+              return const Center(
+                child: CupertinoActivityIndicator(),
+              );
+            },
           ),
         ),
       );
@@ -185,7 +215,7 @@ class _HomePageState extends State<HomePage> {
                     ? ConstColors.tealBlue
                     : ConstColors.lightGrey,
               ),
-              child: SvgPicture.asset(
+              child: SvgPicture.network(
                 icon,
                 fit: BoxFit.none,
                 height: getProportionateScreenHeight(35.0),
@@ -200,6 +230,39 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       );
+
+  Future<List<Category>> _getCategories() async {
+    QuerySnapshot categories = await _fireStore
+        .collection('VideoLessonCategories')
+        .orderBy('timestamp')
+        .get();
+
+    return categories.docs
+        .map((e) => Category.fromJson({
+              'id': e['id'],
+              'name': e['name'],
+              'imageUrl': e['imageUrl'],
+            }))
+        .toList();
+  }
+
+  Future<List<Course>> _getCourseList() async {
+    QuerySnapshot courses =
+        await _fireStore.collection('VideoLessonCourseList').get();
+
+    return courses.docs
+        .map((e) => Course.fromJson({
+              'id': e['id'],
+              'name': e['name'],
+              'description': e['description'],
+              'imageUrl': e['imageUrl'],
+              'price': e['price'],
+              'percentOfLike': e['percentOfLike'],
+              'categoryId': e['categoryId'],
+              'amount': e['amount'],
+            }))
+        .toList();
+  }
 
   final List<String> _courseTitles = [
     "Dasturlash",

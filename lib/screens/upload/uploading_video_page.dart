@@ -61,7 +61,7 @@ class _UploadingVideoPageState extends State<UploadingVideoPage> {
 
   FutureBuilder<List<Course>> _buildFutureBuilder() {
     return FutureBuilder(
-        future: _getCaourseList(),
+        future: _getCourseList(),
         builder: (context, AsyncSnapshot<List<Course>> snap) {
           if (snap.hasError) {
             return Center(
@@ -118,7 +118,7 @@ class _UploadingVideoPageState extends State<UploadingVideoPage> {
       description,
       imageUrl,
       0,
-      DateTime.now(),
+      // DateTime.now(),
       _courseId,
     );
 
@@ -136,7 +136,7 @@ class _UploadingVideoPageState extends State<UploadingVideoPage> {
     });
   }
 
-  Future<List<Course>> _getCaourseList() async {
+  Future<List<Course>> _getCourseList() async {
     QuerySnapshot courses =
         await _fireStore.collection('VideoLessonCourseList').get();
 

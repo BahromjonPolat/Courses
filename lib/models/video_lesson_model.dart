@@ -7,7 +7,7 @@ class VideoModel {
   String? _videoUrl;
   String? _courseId;
   int? _duration;
-  DateTime? _uploadedDate;
+  // DateTime? _uploadedDate;
 
   VideoModel(
     this._id,
@@ -15,7 +15,7 @@ class VideoModel {
     this._description,
     this._videoUrl,
     this._duration,
-    this._uploadedDate,
+    // this._uploadedDate,
     this._courseId,
   );
 
@@ -23,7 +23,7 @@ class VideoModel {
     _id = map['id'];
     _title = map['title'];
     _description = map['description'];
-    _uploadedDate = map['uploadedDate'];
+    // _uploadedDate = map['uploadedDate'] as DateTime;
     _videoUrl = map['videoUrl'];
     _duration = map['duration'];
     _courseId = map['courseId'];
@@ -35,11 +35,11 @@ class VideoModel {
         'description': _description,
         'videoUrl': _videoUrl,
         'duration': _duration,
-        'uploadedDate': _uploadedDate,
+        // 'uploadedDate': _uploadedDate,
         'courseId': _courseId,
       };
 
-  DateTime get uploadedDate => _uploadedDate!;
+  // DateTime get uploadedDate => _uploadedDate!;
 
   int get duration => _duration!;
 

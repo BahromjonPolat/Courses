@@ -5,29 +5,34 @@ import 'package:flutter/services.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class VideoPlayerPage extends StatefulWidget {
-  const VideoPlayerPage({Key? key}) : super(key: key);
+  String videoUrl;
+
+  VideoPlayerPage(this.videoUrl, {Key? key}) : super(key: key);
 
   @override
   _VideoPlayerPageState createState() => _VideoPlayerPageState();
 }
 
 class _VideoPlayerPageState extends State<VideoPlayerPage> {
-  final YoutubePlayerController _playerController = YoutubePlayerController(
-    initialVideoId: "cQr9EBFBJxQ",
-    flags: const YoutubePlayerFlags(
-      loop: false,
-      autoPlay: true,
-    ),
-  );
+  late String _videoUrl;
+
+  late YoutubePlayerController _playerController;
 
   @override
   void initState() {
     super.initState();
+    _videoUrl = widget.videoUrl;
+    _playerController = YoutubePlayerController(
+      initialVideoId: _videoUrl,
+      flags: const YoutubePlayerFlags(
+        loop: false,
+        autoPlay: true,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: ConstColors.black,
       statusBarIconBrightness: Brightness.light,
@@ -35,7 +40,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
     return Scaffold(
       body: _buildBody(),
     );
-
   }
 
   SafeArea _buildBody() => SafeArea(
