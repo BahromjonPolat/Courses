@@ -20,4 +20,10 @@ class Category {
         'imageUrl': _imageUrl,
         'name': _name,
       };
+
+  String get imageUrl => _imageUrl!;
+
+  String get name => _name!;
+
+  String get id => _id!;
 }
