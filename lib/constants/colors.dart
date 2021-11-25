@@ -10,5 +10,6 @@ class ConstColors {
   static const Color tealBlue = Color(0xff31B9CC);
   static const Color lightBlue = Color(0xffADE3EB);
   static const Color amber = Color(0xffFDD015);
+  static const Color whiteWithOpacity = Color(0x59f1f2f6);
 
 }

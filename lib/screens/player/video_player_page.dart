@@ -1,8 +1,5 @@
-import 'package:courses/constants/colors.dart';
-import 'package:courses/widgets/text_widgets.dart';
+import 'package:courses/components/exporting_packages.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class VideoPlayerPage extends StatefulWidget {
   String videoUrl;

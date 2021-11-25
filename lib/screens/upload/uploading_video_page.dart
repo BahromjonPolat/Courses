@@ -25,7 +25,7 @@ class _UploadingVideoPageState extends State<UploadingVideoPage> {
 
   @override
   Widget build(BuildContext context) {
-    print(_courseId);
+    // print(_courseId);
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -68,24 +68,27 @@ class _UploadingVideoPageState extends State<UploadingVideoPage> {
               child: SetTextWidget("ERROR"),
             );
           } else if (snap.hasData) {
-            return Row(
-              children: List.generate(snap.data!.length, (index) {
-                Course course = snap.data![index];
-                return TextButton(
-                    style: TextButton.styleFrom(
-                        primary: _courseId == course.id
-                            ? ConstColors.tealBlue
-                            : ConstColors.amber),
-                    onPressed: () {
-                      setState(() {
-                        _courseId = course.id;
-                      });
-                    },
-                    child: SetTextWidget(
-                      course.name,
-                      textColor: ConstColors.amber,
-                    ));
-              }),
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: List.generate(snap.data!.length, (index) {
+                  Course course = snap.data![index];
+                  return TextButton(
+                      style: TextButton.styleFrom(
+                          primary: _courseId == course.id
+                              ? ConstColors.tealBlue
+                              : ConstColors.amber),
+                      onPressed: () {
+                        setState(() {
+                          _courseId = course.id;
+                        });
+                      },
+                      child: SetTextWidget(
+                        course.name,
+                        textColor: ConstColors.amber,
+                      ));
+                }),
+              ),
             );
           }
 
@@ -131,8 +134,8 @@ class _UploadingVideoPageState extends State<UploadingVideoPage> {
 
       _courseId = "";
       _videoUrlController.clear();
-      _titleController.clear();
-      _descriptionController.clear();
+      // _titleController.clear();
+      // _descriptionController.clear();
     });
   }
 

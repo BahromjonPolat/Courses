@@ -1,16 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:courses/components/size_config.dart';
-import 'package:courses/constants/colors.dart';
-import 'package:courses/constants/icons.dart';
-import 'package:courses/models/category_model.dart';
-import 'package:courses/models/course_model.dart';
-import 'package:courses/screens/list/lesson_list_page.dart';
-import 'package:courses/widgets/text_widgets.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:courses/components/exporting_packages.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -24,14 +13,23 @@ class _HomePageState extends State<HomePage> {
   final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
 
   List<Course>? _courseList;
+  late List<Course> _currentCourse;
+  late String _currentCategoryId;
 
   @override
   void initState() {
     super.initState();
+
     _getCourseList().then((value) {
       _courseList = value;
       setState(() {});
     });
+  }
+
+  _setCurrentCourseList() {
+    for (Course course in _courseList!) {
+
+    }
   }
 
   @override
@@ -42,7 +40,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  CustomScrollView _buildBody() => CustomScrollView(
+  CustomScrollView _buildBody() =>
+      CustomScrollView(
         slivers: [
           _buildSliverAppBar(),
           _showSearchField(),
@@ -50,12 +49,15 @@ class _HomePageState extends State<HomePage> {
           _showCourseTitle(),
           _courseList != null
               ? SliverList(
-                  delegate: SliverChildListDelegate(
-                    List.generate(_courseList!.length, (index) => _setLessonInfoLayout(_courseList![index]))
-                  ))
+              delegate: SliverChildListDelegate(
+
+                  List.generate(
+                      _courseList!.length,
+                          (index) =>
+                          _setLessonInfoLayout(_courseList![index]))))
               : SliverToBoxAdapter(
-                  child: SetTextWidget("Null"),
-                ),
+            child: SetTextWidget("Null"),
+          ),
         ],
       );
 
@@ -70,7 +72,10 @@ class _HomePageState extends State<HomePage> {
             horizontal: getProportionateScreenWidth(16.0),
             vertical: getProportionateScreenHeight(5.5)),
         height: getProportionateScreenHeight(211.0),
-        width: MediaQuery.of(context).size.width,
+        width: MediaQuery
+            .of(context)
+            .size
+            .width,
         padding: EdgeInsets.all(getProportionateScreenWidth(7.0)),
         decoration: BoxDecoration(
           color: ConstColors.lightGrey,
@@ -83,7 +88,10 @@ class _HomePageState extends State<HomePage> {
           children: [
             Container(
               height: getProportionateScreenHeight(132.0),
-              width: MediaQuery.of(context).size.width,
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10.0),
                 image: DecorationImage(
@@ -118,7 +126,7 @@ class _HomePageState extends State<HomePage> {
     return SliverToBoxAdapter(
       child: Padding(
         padding:
-            EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(16.0)),
+        EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(16.0)),
         child: SetTextWidget(
           "${_courseTitles[_currentCategoryIndex]}ga oid kurslar",
           size: getProportionateScreenWidth(16.0),
@@ -127,7 +135,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  SliverAppBar _buildSliverAppBar() => SliverAppBar(
+  SliverAppBar _buildSliverAppBar() =>
+      SliverAppBar(
         systemOverlayStyle: SystemUiOverlayStyle.dark,
         backgroundColor: ConstColors.white,
         floating: true,
@@ -145,7 +154,8 @@ class _HomePageState extends State<HomePage> {
         ),
       );
 
-  _showSearchField() => SliverToBoxAdapter(
+  _showSearchField() =>
+      SliverToBoxAdapter(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: TextField(
@@ -163,12 +173,14 @@ class _HomePageState extends State<HomePage> {
         ),
       );
 
-  OutlineInputBorder _setInputBorder() => OutlineInputBorder(
+  OutlineInputBorder _setInputBorder() =>
+      OutlineInputBorder(
         borderSide: BorderSide.none,
         borderRadius: BorderRadius.circular(10.0),
       );
 
-  SliverToBoxAdapter _showCategories() => SliverToBoxAdapter(
+  SliverToBoxAdapter _showCategories() =>
+      SliverToBoxAdapter(
         child: SizedBox(
           height: getProportionateScreenHeight(149.0),
           child: FutureBuilder(
@@ -196,7 +208,8 @@ class _HomePageState extends State<HomePage> {
         ),
       );
 
-  InkWell _setCategoryLayout(String title, String icon, int index) => InkWell(
+  InkWell _setCategoryLayout(String title, String icon, int index) =>
+      InkWell(
         onTap: () {
           setState(() {
             _currentCategoryIndex = index;
@@ -238,29 +251,31 @@ class _HomePageState extends State<HomePage> {
         .get();
 
     return categories.docs
-        .map((e) => Category.fromJson({
-              'id': e['id'],
-              'name': e['name'],
-              'imageUrl': e['imageUrl'],
-            }))
+        .map((e) =>
+        Category.fromJson({
+          'id': e['id'],
+          'name': e['name'],
+          'imageUrl': e['imageUrl'],
+        }))
         .toList();
   }
 
   Future<List<Course>> _getCourseList() async {
     QuerySnapshot courses =
-        await _fireStore.collection('VideoLessonCourseList').get();
+    await _fireStore.collection('VideoLessonCourseList').get();
 
     return courses.docs
-        .map((e) => Course.fromJson({
-              'id': e['id'],
-              'name': e['name'],
-              'description': e['description'],
-              'imageUrl': e['imageUrl'],
-              'price': e['price'],
-              'percentOfLike': e['percentOfLike'],
-              'categoryId': e['categoryId'],
-              'amount': e['amount'],
-            }))
+        .map((e) =>
+        Course.fromJson({
+          'id': e['id'],
+          'name': e['name'],
+          'description': e['description'],
+          'imageUrl': e['imageUrl'],
+          'price': e['price'],
+          'percentOfLike': e['percentOfLike'],
+          'categoryId': e['categoryId'],
+          'amount': e['amount'],
+        }))
         .toList();
   }
 

@@ -1,11 +1,8 @@
 import 'dart:async';
-
-import 'package:courses/components/size_config.dart';
-import 'package:courses/constants/colors.dart';
-import 'package:courses/screens/home/home_page.dart';
+import 'package:courses/screens/upload/add_lesson_page.dart';
 import 'package:courses/screens/upload/upload_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:courses/components/exporting_packages.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({Key? key}) : super(key: key);

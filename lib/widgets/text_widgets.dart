@@ -7,6 +7,7 @@ class SetTextWidget extends StatelessWidget {
   final Color? textColor;
   FontWeight? weight;
   double? size;
+  int? maxLines;
 
   SetTextWidget(
     this._text, {
@@ -14,12 +15,14 @@ class SetTextWidget extends StatelessWidget {
     this.textColor,
     this.weight,
     this.size,
+    this.maxLines,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Text(
       _text,
+      maxLines: maxLines ?? 1,
       style: TextStyle(
         color: textColor ?? ConstColors.black,
         fontSize: size ?? getProportionateScreenWidth(14.0),

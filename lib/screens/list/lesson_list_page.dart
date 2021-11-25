@@ -1,16 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:courses/components/size_config.dart';
 import 'package:courses/constants/colors.dart';
-import 'package:courses/constants/icons.dart';
-import 'package:courses/models/course_model.dart';
-import 'package:courses/models/video_lesson_model.dart';
-import 'package:courses/screens/player/video_player_page.dart';
-import 'package:courses/widgets/text_widgets.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:courses/components/exporting_packages.dart';
 
 class LessonListPage extends StatefulWidget {
   Course course;
@@ -81,7 +71,9 @@ class _LessonListPageState extends State<LessonListPage> {
         onTap: () {
           // print(video.videoUrl);
           Navigator.push(
-              context, MaterialPageRoute(builder: (_) => VideoPlayerPage(video.videoUrl)));
+              context,
+              MaterialPageRoute(
+                  builder: (_) => VideoPlayerPage(video.videoUrl)));
         },
         child: Container(
           height: getProportionateScreenHeight(140.0),
@@ -96,17 +88,32 @@ class _LessonListPageState extends State<LessonListPage> {
           ),
           child: Row(
             children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(10.0),
-                  topLeft: Radius.circular(10.0),
-                ),
-                child: Image.network(
-                  "https://i.ytimg.com/vi/69pxFJF5SkY/maxresdefault.jpg",
-                  width: getProportionateScreenWidth(140.0),
-                  height: getProportionateScreenHeight(140.0),
-                  fit: BoxFit.cover,
-                ),
+              Container(
+                alignment: Alignment.bottomRight,
+                padding: EdgeInsets.all(getProportionateScreenWidth(5.0)),
+                width: getProportionateScreenWidth(140.0),
+                height: getProportionateScreenHeight(140.0),
+                decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(10.0),
+                      topLeft: Radius.circular(10.0),
+                    ),
+                    image: DecorationImage(
+                        fit: BoxFit.cover,
+                        image: NetworkImage(_course!.imageUrl))),
+                child: SizedBox(
+                    height: getProportionateScreenHeight(22.0),
+                    width: getProportionateScreenWidth(37.0),
+                    child: Material(
+                      color: ConstColors.whiteWithOpacity,
+                      borderRadius: BorderRadius.circular(5.0),
+                      child: Center(
+                          child: SetTextWidget(
+                        "12:25",
+                        size: getProportionateScreenWidth(12.0),
+                        weight: FontWeight.w400,
+                      )),
+                    )),
               ),
               Expanded(
                 child: Padding(
@@ -122,6 +129,7 @@ class _LessonListPageState extends State<LessonListPage> {
                       ),
                       SetTextWidget(
                         video.description,
+                        maxLines: 3,
                         weight: FontWeight.w400,
                         size: getProportionateScreenWidth(12.0),
                       ),
@@ -156,16 +164,6 @@ class _LessonListPageState extends State<LessonListPage> {
         .where('courseId', isEqualTo: _course!.id)
         .get();
 
-    return data.docs
-        .map((e) => VideoModel.fromJson({
-              'id': e['id'],
-              'title': e['title'],
-              'description': e['description'],
-              'videoUrl': e['videoUrl'],
-              'duration': e['duration'],
-              'uploadedDate': e['uploadedDate'],
-              'courseId': e['courseId'],
-            }))
-        .toList();
+    return data.docs.map((e) => VideoModel.fromJson(e.data())).toList();
   }
 }
